@@ -13,7 +13,7 @@ def file_write():
     except(IOError, OSError):
         print("ERROR: Unable to read {}, skipping.".format(filename))
         pass
-
+        
 if len(sys.argv) < 2:
     print("ERROR: Please specify the root directory containing the files you wish to collate")
 else:
@@ -28,7 +28,7 @@ else:
             print("Creating output directory...")
             os.makedirs(output_dir)
         for root, dirs, files in os.walk(root_dir, onerror=None):  
-            file_num_count_str = "_collation_output_{}.txt".format(str(file_num_count))
+            file_num_count_str = "_collation_output_{}.txt".format(file_num_count)
             for filename in files:
                 if "collation_output" in filename:
                     continue
@@ -42,7 +42,7 @@ else:
                     else:
                         size_buffer = file_size
                         file_num_count += 1
-                        file_num_count_str = "_collation_output_{}.txt".format(str(file_num_count))
+                        file_num_count_str = "_collation_output_{}.txt".format(file_num_count)
                         file_write()
                 else:
                     shutil.move(unsorted_file,out)
