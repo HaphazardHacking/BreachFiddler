@@ -3,7 +3,7 @@ import sys
 import tarfile
 
 if len(sys.argv) < 2:
-    print("Please specify the root directory containing the files you wish to organise")
+    print("ERROR: Please specify the root directory containing the files you wish to decompress")
 else:
     root_dir = sys.argv[1]
     os.chdir(root_dir)

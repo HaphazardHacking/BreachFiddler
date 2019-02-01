@@ -15,7 +15,7 @@ def file_write():
         pass
 
 if len(sys.argv) < 2:
-    print("Please specify the root directory containing the files you wish to collate")
+    print("ERROR: Please specify the root directory containing the files you wish to collate")
 else:
     size_buffer = 0
     file_num_count = 0
@@ -30,7 +30,6 @@ else:
         for root, dirs, files in os.walk(root_dir, onerror=None):  
             file_num_count_str = "_collation_output_{}.txt".format(str(file_num_count))
             for filename in files:
-                #if fnmatch.fnmatch(filename,"*collation_output*"):
                 if "collation_output" in filename:
                     continue
                 unsorted_file = os.path.join(root, filename)
