@@ -1,6 +1,7 @@
 import os
 import sys
 import funcs
+import time
          
 if len(sys.argv) < 3:
     print("ERROR: Two arguments required: domainsort.py <root_directory_of_files_to_sort> <file_containing_list_of_domains>")
@@ -17,6 +18,7 @@ else:
             print("Creating output directory...")
             os.makedirs(output_dir)
         with open(domain_list_file) as domain_list:
+            start = time.time()
             line_total = 0
             match_total = 0
             for root, dirs, files in os.walk(root_dir, onerror=None):
@@ -36,15 +38,19 @@ else:
                             if domain == "":
                                 continue
                             for domain_line in domain_list:
-                                print("Checking domain: {} against line: {}".format(domain,domain_line))
+                                print("Checking {} against {}".format(domain,domain_line))
                                 if domain == domain_line.strip('\n'):
                                     match_count += 1
                                     out_file_name = os.path.join(output_dir,domain)
                                     with open(out_file_name, "a") as out_file:
                                         out_file.write(line)
-                                else:
-                                    print("No match")
                             domain_list.seek(0)
-                            
                         match_total += match_count
-                        print("Found {0} matches from {1} lines in {2}. Total matches: {3}".format(match_count,line_count,filename,match_total))
+                        end = time.time()
+                        time_taken = end - start
+                        
+                        print("Time taken: {}".format(time_taken))
+                        print("Line processed: {}".format(line_count))
+                        print("Number of matches: {}".format(match_total))
+
+                        #print("Found {} matches from {} lines in {}. Total matches: {}".format(match_count,line_count,filename,match_total))
