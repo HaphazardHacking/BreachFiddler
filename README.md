@@ -9,6 +9,6 @@ Current progress / TODO:
 - dedup.py, takes directory path as an argument, deduplicates lines within each file, *needs to be re-done once sorting by domain is done*
 - domainsort.py, re-done, much quicker.
 - search.py, TODO
--
+
 - code comments, very much TODO
 - multi-threading, domainsort is pretty good but could be quicker
