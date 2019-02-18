@@ -2,7 +2,9 @@ import os
 import sys
 import funcs
 import time
-         
+import datetime
+
+
 if len(sys.argv) < 3:
     print("ERROR: Two arguments required: domainsort.py <root_directory_of_files_to_sort> <file_containing_list_of_domains>")
 else:
@@ -17,40 +19,57 @@ else:
         if not os.path.isdir(output_dir):
             print("Creating output directory...")
             os.makedirs(output_dir)
-        with open(domain_list_file) as domain_list:
-            start = time.time()
-            line_total = 0
-            match_total = 0
-            for root, dirs, files in os.walk(root_dir, onerror=None):
-                for filename in files:
-                    if "domain_sort_output" in filename:
-                        continue
-                    unsorted_file = os.path.join(root, filename)
-                    with open(unsorted_file, "r") as in_file:
-                        print("Using {} as infile".format(unsorted_file))
-                        match_count = 0
-                        line_count = 0
-                        for line in in_file:
-                            line_count += 1
-                            domain = funcs.between(line,"@",":")
-                            if domain == "":
-                                domain = funcs.between(line,"@",";")
-                            if domain == "":
-                                continue
-                            for domain_line in domain_list:
-                                print("Checking {} against {}".format(domain,domain_line))
-                                if domain == domain_line.strip('\n'):
-                                    match_count += 1
-                                    out_file_name = os.path.join(output_dir,domain)
-                                    with open(out_file_name, "a") as out_file:
-                                        out_file.write(line)
-                            domain_list.seek(0)
-                        match_total += match_count
-                        end = time.time()
-                        time_taken = end - start
-                        
-                        print("Time taken: {}".format(time_taken))
-                        print("Line processed: {}".format(line_count))
-                        print("Number of matches: {}".format(match_total))
 
-                        #print("Found {} matches from {} lines in {}. Total matches: {}".format(match_count,line_count,filename,match_total))
+        domain_list = funcs.file_to_list(domain_list_file)
+        prefix = "@"
+        domain_list = [prefix + x for x in domain_list]
+        line_total = 0
+        match_total = 0
+        time_total = 0
+        for root, dirs, files in os.walk(root_dir, onerror=None):
+            for filename in files:
+                if "_sorted_" not in filename:
+                    start = time.time()
+                    
+                    unsorted_file = os.path.join(root, filename)
+                    in_file = funcs.file_to_list(unsorted_file)
+                    line_count = len(in_file)
+                    line_total += line_count
+                    
+                    print("\nProcessing {}...".format(filename))
+                    matches = [s for s in in_file if any(xs in s for xs in domain_list)]
+                    match_total += len(matches)
+                    
+                    end = time.time()
+                    time_taken_int = int(end - start)
+                    time_taken = str(datetime.timedelta(seconds=time_taken_int))
+                    time_total += time_taken_int
+
+                    print("\nTime taken: {}".format(time_taken))
+                    print("Combos processed: {}".format(line_count))
+                    print("Number of matches: {}".format(len(matches)))
+                    print("\nWriting results to output directories...")
+                    
+                    for match in matches:
+                        domain = funcs.between(match,"@",":")
+                        if domain == "":
+                            domain = funcs.between(match,"@",";")
+                        if domain == "":
+                            continue
+                        filename = ("_sorted_" + domain)
+                        out_file_name = os.path.join(output_dir,filename)
+                        with open(out_file_name, "a") as out_file:
+                            out_file.write(match + "\n")
+                    print("Done!")
+
+        time_taken = str(datetime.timedelta(seconds=time_total))
+        
+        out_files_total = 0
+        for root, dirs, files in os.walk(output_dir):
+            out_files_total += len(files)
+        
+        print("\n\n****************************************")
+        print("Total time taken: {}".format(time_taken))
+        print("Total combos processed: {}".format(line_total))
+        print("Total matches found: {}".format(match_total))
+        print("****************************************")

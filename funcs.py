@@ -24,3 +24,9 @@ def after(value, a):
     if adjusted_pos_a >= len(value): 
         return ""
     return value[adjusted_pos_a:]
+
+def file_to_list(in_file):
+    file_in = open(in_file,"r")
+    in_list = file_in.read().splitlines()
+    file_in.close()
+    return in_list
